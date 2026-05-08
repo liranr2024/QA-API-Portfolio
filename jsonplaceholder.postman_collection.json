@@ -1,0 +1,370 @@
+{
+  "info": {
+    "name": "JSONPlaceholder API Tests",
+    "description": "QA Portfolio - Complete API testing suite for JSONPlaceholder. Includes status assertions, schema validation, chained requests, and edge cases.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://jsonplaceholder.typicode.com",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "01 - GET all posts",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/posts",
+          "host": ["{{baseUrl}}"],
+          "path": ["posts"]
+        },
+        "description": "Retrieve all posts. Should return an array of 100 items."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code is 200', () => {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Response time is below 1000ms', () => {",
+              "    pm.expect(pm.response.responseTime).to.be.below(1000);",
+              "});",
+              "",
+              "pm.test('Response is an array', () => {",
+              "    const body = pm.response.json();",
+              "    pm.expect(body).to.be.an('array');",
+              "});",
+              "",
+              "pm.test('Returns exactly 100 posts', () => {",
+              "    const body = pm.response.json();",
+              "    pm.expect(body.length).to.eql(100);",
+              "});",
+              "",
+              "pm.test('Each post has required fields', () => {",
+              "    const body = pm.response.json();",
+              "    body.forEach(post => {",
+              "        pm.expect(post).to.have.all.keys('userId', 'id', 'title', 'body');",
+              "    });",
+              "});",
+              "",
+              "// Save first post id for chained requests",
+              "const firstPost = pm.response.json()[0];",
+              "pm.collectionVariables.set('savedPostId', firstPost.id);",
+              "pm.collectionVariables.set('savedUserId', firstPost.userId);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 - GET single post",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/posts/{{savedPostId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["posts", "{{savedPostId}}"]
+        },
+        "description": "Retrieve a single post by ID. Uses savedPostId from previous request."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code is 200', () => {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Schema validation - post object structure', () => {",
+              "    const schema = {",
+              "        type: 'object',",
+              "        required: ['userId', 'id', 'title', 'body'],",
+              "        properties: {",
+              "            userId: { type: 'number' },",
+              "            id: { type: 'number' },",
+              "            title: { type: 'string' },",
+              "            body: { type: 'string' }",
+              "        }",
+              "    };",
+              "    pm.response.to.have.jsonSchema(schema);",
+              "});",
+              "",
+              "pm.test('Returned post id matches requested id', () => {",
+              "    const body = pm.response.json();",
+              "    const requestedId = parseInt(pm.collectionVariables.get('savedPostId'));",
+              "    pm.expect(body.id).to.eql(requestedId);",
+              "});",
+              "",
+              "pm.test('Title is not empty', () => {",
+              "    const body = pm.response.json();",
+              "    pm.expect(body.title).to.be.a('string').and.not.empty;",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 - POST create new post",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"title\": \"QA Portfolio Test Post\",\n    \"body\": \"This post was created by an automated Postman test.\",\n    \"userId\": 1\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/posts",
+          "host": ["{{baseUrl}}"],
+          "path": ["posts"]
+        },
+        "description": "Create a new post. Should return 201 with the created object including a new id."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code is 201 Created', () => {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "",
+              "pm.test('Response has new id assigned', () => {",
+              "    const body = pm.response.json();",
+              "    pm.expect(body.id).to.be.a('number');",
+              "    pm.expect(body.id).to.be.above(0);",
+              "});",
+              "",
+              "pm.test('Title matches request payload', () => {",
+              "    const body = pm.response.json();",
+              "    pm.expect(body.title).to.eql('QA Portfolio Test Post');",
+              "});",
+              "",
+              "pm.test('Body matches request payload', () => {",
+              "    const body = pm.response.json();",
+              "    pm.expect(body.body).to.include('automated Postman test');",
+              "});",
+              "",
+              "// Save created id for use in next requests",
+              "pm.collectionVariables.set('createdPostId', pm.response.json().id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 - PUT full update",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"id\": 1,\n    \"title\": \"Fully Updated Title\",\n    \"body\": \"This post was completely replaced via PUT.\",\n    \"userId\": 1\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/posts/1",
+          "host": ["{{baseUrl}}"],
+          "path": ["posts", "1"]
+        },
+        "description": "Replace an entire post resource. Should return 200 with the updated object."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code is 200', () => {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('ID is preserved after PUT', () => {",
+              "    pm.expect(pm.response.json().id).to.eql(1);",
+              "});",
+              "",
+              "pm.test('Title was updated', () => {",
+              "    pm.expect(pm.response.json().title).to.eql('Fully Updated Title');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 - PATCH partial update",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"title\": \"Only Title Updated\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/posts/1",
+          "host": ["{{baseUrl}}"],
+          "path": ["posts", "1"]
+        },
+        "description": "Partially update a post - only the title field. Other fields should remain unchanged."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code is 200', () => {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Title was updated to new value', () => {",
+              "    pm.expect(pm.response.json().title).to.eql('Only Title Updated');",
+              "});",
+              "",
+              "pm.test('Original body field is preserved', () => {",
+              "    pm.expect(pm.response.json().body).to.be.a('string').and.not.empty;",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "06 - DELETE post",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/posts/1",
+          "host": ["{{baseUrl}}"],
+          "path": ["posts", "1"]
+        },
+        "description": "Delete a post. JSONPlaceholder returns 200 with empty object."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code is 200', () => {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Response time is acceptable', () => {",
+              "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+              "});",
+              "",
+              "pm.test('Response body is empty object', () => {",
+              "    pm.expect(pm.response.json()).to.eql({});",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "07 - GET non-existent post (404)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/posts/9999",
+          "host": ["{{baseUrl}}"],
+          "path": ["posts", "9999"]
+        },
+        "description": "Negative test - request a post that does not exist. Should return 404."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code is 404 Not Found', () => {",
+              "    pm.response.to.have.status(404);",
+              "});",
+              "",
+              "pm.test('Response body is empty object', () => {",
+              "    pm.expect(pm.response.json()).to.eql({});",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "08 - GET comments by post (chained)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/posts/{{savedPostId}}/comments",
+          "host": ["{{baseUrl}}"],
+          "path": ["posts", "{{savedPostId}}", "comments"]
+        },
+        "description": "Chained request - uses savedPostId from request 01 to fetch related comments."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code is 200', () => {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Response is a non-empty array', () => {",
+              "    const body = pm.response.json();",
+              "    pm.expect(body).to.be.an('array').that.is.not.empty;",
+              "});",
+              "",
+              "pm.test('Every comment belongs to the requested post', () => {",
+              "    const body = pm.response.json();",
+              "    const expectedPostId = parseInt(pm.collectionVariables.get('savedPostId'));",
+              "    body.forEach(comment => {",
+              "        pm.expect(comment.postId).to.eql(expectedPostId);",
+              "    });",
+              "});",
+              "",
+              "pm.test('Each comment has valid email format', () => {",
+              "    const body = pm.response.json();",
+              "    const emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;",
+              "    body.forEach(comment => {",
+              "        pm.expect(comment.email).to.match(emailRegex);",
+              "    });",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

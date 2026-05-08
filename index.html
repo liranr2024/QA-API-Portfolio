@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>QA Portfolio · API Testing Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700;800&family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e0f;
+    --bg-elev: #11171a;
+    --bg-card: #161d21;
+    --border: #1f2a30;
+    --border-bright: #2d3b43;
+    --text: #e6edf0;
+    --text-dim: #8a9aa3;
+    --text-muted: #5a6b75;
+    --accent: #00ff9d;
+    --accent-dim: #00cc7e;
+    --warn: #ffb454;
+    --error: #ff5e6c;
+    --info: #4dc4ff;
+    --purple: #b07cff;
+    --mono: 'JetBrains Mono', ui-monospace, Menlo, monospace;
+    --sans: 'Heebo', system-ui, sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* Grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: 0.25;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    top: -200px;
+    right: -200px;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(0,255,157,0.08), transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* ====== TOP BAR ====== */
+  .topbar {
+    border-bottom: 1px solid var(--border);
+    background: rgba(10, 14, 15, 0.85);
+    backdrop-filter: blur(8px);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    font-family: var(--mono);
+    font-size: 12px;
+  }
+  .topbar-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 48px;
+  }
+  .topbar-left { display: flex; align-items: center; gap: 16px; color: var(--text-dim); }
+  .topbar-right { display: flex; align-items: center; gap: 12px; }
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+  .badge-mono {
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 4px 8px;
+    border: 1px solid var(--border-bright);
+    border-radius: 3px;
+    color: var(--text-dim);
+    letter-spacing: 0.5px;
+  }
+
+  /* ====== HERO ====== */
+  .hero {
+    padding: 80px 0 60px;
+    position: relative;
+  }
+  .hero-tag {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent);
+    letter-spacing: 2px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .hero-tag::before {
+    content: '';
+    width: 32px;
+    height: 1px;
+    background: var(--accent);
+  }
+  h1 {
+    font-family: var(--sans);
+    font-weight: 900;
+    font-size: clamp(40px, 7vw, 84px);
+    line-height: 1;
+    letter-spacing: -2px;
+    margin-bottom: 24px;
+  }
+  h1 .accent {
+    color: var(--accent);
+    font-family: var(--mono);
+    font-weight: 700;
+    font-style: italic;
+  }
+  .hero-sub {
+    font-size: 18px;
+    color: var(--text-dim);
+    max-width: 640px;
+    margin-bottom: 40px;
+    line-height: 1.7;
+  }
+  .hero-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text-muted);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 0;
+  }
+  .hero-meta span strong {
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  /* ====== SECTION HEADERS ====== */
+  section { padding: 60px 0; }
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 40px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-num {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--accent);
+    font-weight: 500;
+  }
+  .section-title {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+  }
+  .section-meta {
+    margin-right: auto;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  /* ====== ENDPOINT GRID ====== */
+  .endpoints {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+  .endpoint {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 16px;
+    font-family: var(--mono);
+    font-size: 13px;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .endpoint:hover {
+    border-color: var(--border-bright);
+    transform: translateY(-2px);
+  }
+  .endpoint::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--accent);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .endpoint:hover::before { opacity: 1; }
+  .endpoint-method {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin-left: 8px;
+  }
+  .method-get { background: rgba(77,196,255,0.15); color: var(--info); }
+  .method-post { background: rgba(0,255,157,0.15); color: var(--accent); }
+  .method-put { background: rgba(255,180,84,0.15); color: var(--warn); }
+  .method-delete { background: rgba(255,94,108,0.15); color: var(--error); }
+  .method-patch { background: rgba(176,124,255,0.15); color: var(--purple); }
+  .endpoint-path {
+    color: var(--text);
+    direction: ltr;
+    text-align: left;
+    word-break: break-all;
+  }
+  .endpoint-desc {
+    margin-top: 8px;
+    font-family: var(--sans);
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  /* ====== TEST RESULTS TABLE ====== */
+  .results-shell {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .results-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 16px;
+    background: var(--bg-elev);
+    border-bottom: 1px solid var(--border);
+    font-family: var(--mono);
+    font-size: 12px;
+  }
+  .results-toolbar-dots {
+    display: flex;
+    gap: 6px;
+  }
+  .toolbar-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--border-bright);
+  }
+  .toolbar-dot:nth-child(1) { background: #ff5f57; }
+  .toolbar-dot:nth-child(2) { background: #febc2e; }
+  .toolbar-dot:nth-child(3) { background: #28c840; }
+  .toolbar-title { color: var(--text-dim); }
+
+  .results-summary {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border-bottom: 1px solid var(--border);
+  }
+  .stat {
+    padding: 20px;
+    border-left: 1px solid var(--border);
+  }
+  .stat:first-child { border-left: none; }
+  .stat-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+  .stat-value {
+    font-family: var(--mono);
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .stat-value.ok { color: var(--accent); }
+  .stat-value.warn { color: var(--warn); }
+  .stat-value.err { color: var(--error); }
+
+  .test-table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 13px; }
+  .test-table th {
+    text-align: right;
+    padding: 12px 16px;
+    background: var(--bg-elev);
+    color: var(--text-muted);
+    font-weight: 500;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 1px solid var(--border);
+  }
+  .test-table th:nth-child(2), .test-table th:nth-child(3), .test-table th:nth-child(4), .test-table th:nth-child(5) {
+    text-align: left;
+  }
+  .test-table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .test-table tr:last-child td { border-bottom: none; }
+  .test-table tr:hover { background: rgba(255,255,255,0.02); }
+  .test-name { color: var(--text); }
+  .test-table .endpoint-cell {
+    direction: ltr;
+    text-align: left;
+    color: var(--text-dim);
+  }
+  .test-table .status-cell, .test-table .time-cell, .test-table .result-cell {
+    direction: ltr;
+    text-align: left;
+  }
+  .status-pill {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .pill-pass { background: rgba(0,255,157,0.12); color: var(--accent); }
+  .pill-fail { background: rgba(255,94,108,0.12); color: var(--error); }
+  .pill-200 { color: var(--accent); }
+  .pill-201 { color: var(--accent); }
+  .pill-204 { color: var(--info); }
+  .pill-404 { color: var(--warn); }
+
+  /* ====== CARDS GRID ====== */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+  }
+  .feature-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 24px;
+    position: relative;
+    transition: all 0.3s ease;
+  }
+  .feature-card:hover {
+    border-color: var(--accent-dim);
+    background: linear-gradient(135deg, var(--bg-card), rgba(0,255,157,0.03));
+  }
+  .feature-icon {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent);
+    margin-bottom: 12px;
+    display: block;
+  }
+  .feature-card h3 {
+    font-size: 18px;
+    margin-bottom: 8px;
+    font-weight: 700;
+  }
+  .feature-card p {
+    color: var(--text-dim);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* ====== DOWNLOAD SECTION ====== */
+  .download-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .download-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 28px;
+    transition: all 0.2s;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    position: relative;
+  }
+  .download-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+  .download-card:hover .dl-arrow { transform: translate(-4px, -4px); color: var(--accent); }
+  .dl-meta {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+  .dl-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .dl-desc {
+    color: var(--text-dim);
+    font-size: 14px;
+    margin-bottom: 16px;
+  }
+  .dl-file {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-muted);
+    direction: ltr;
+    text-align: left;
+  }
+  .dl-arrow {
+    position: absolute;
+    top: 28px;
+    left: 28px;
+    font-family: var(--mono);
+    font-size: 24px;
+    color: var(--text-muted);
+    transition: all 0.2s;
+  }
+
+  /* ====== TERMINAL ====== */
+  .terminal {
+    background: #050708;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    font-family: var(--mono);
+    font-size: 13px;
+  }
+  .terminal-header {
+    background: var(--bg-elev);
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .terminal-body {
+    padding: 20px;
+    direction: ltr;
+    text-align: left;
+    line-height: 1.8;
+    overflow-x: auto;
+  }
+  .term-prompt { color: var(--accent); }
+  .term-comment { color: var(--text-muted); }
+  .term-out { color: var(--text-dim); }
+  .term-ok { color: var(--accent); }
+  .term-warn { color: var(--warn); }
+
+  /* ====== FOOTER ====== */
+  footer {
+    border-top: 1px solid var(--border);
+    margin-top: 80px;
+    padding: 40px 0;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .footer-inner {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  @media (max-width: 720px) {
+    h1 { letter-spacing: -1px; }
+    .results-summary { grid-template-columns: repeat(2, 1fr); }
+    .stat:nth-child(3) { border-left: none; border-top: 1px solid var(--border); }
+    .stat:nth-child(4) { border-top: 1px solid var(--border); }
+    .download-row { grid-template-columns: 1fr; }
+    .test-table th:nth-child(3), .test-table td:nth-child(3) { display: none; }
+    .topbar-left .hide-mobile { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="container topbar-inner">
+    <div class="topbar-left">
+      <span class="dot"></span>
+      <span>SYSTEM ONLINE</span>
+      <span class="hide-mobile">·</span>
+      <span class="hide-mobile">api.test.lab</span>
+    </div>
+    <div class="topbar-right">
+      <span class="badge-mono">v1.0.0</span>
+      <span class="badge-mono">QA</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-tag">API TESTING PORTFOLIO</div>
+    <h1>
+      בדיקות <span class="accent">{API}</span><br>
+      בלי פשרות.
+    </h1>
+    <p class="hero-sub">
+      פרויקט פורטפוליו המדגים בדיקות אוטומטיות מקצה-לקצה על JSONPlaceholder API
+      באמצעות Postman ו-Newman. כולל אסרשנים על סטטוס, ולידציית סכמה,
+      ושרשור בקשות עם משתני סביבה.
+    </p>
+    <div class="hero-meta">
+      <span>// API · <strong>JSONPlaceholder</strong></span>
+      <span>// Tools · <strong>Postman + Newman</strong></span>
+      <span>// Tests · <strong>24 assertions</strong></span>
+      <span>// Coverage · <strong>5 endpoints</strong></span>
+    </div>
+  </section>
+
+  <!-- ENDPOINTS -->
+  <section>
+    <div class="section-header">
+      <span class="section-num">01 //</span>
+      <h2 class="section-title">Endpoints Under Test</h2>
+      <span class="section-meta">jsonplaceholder.typicode.com</span>
+    </div>
+    <div class="endpoints">
+      <div class="endpoint">
+        <span class="endpoint-method method-get">GET</span>
+        <span class="endpoint-path">/posts</span>
+        <p class="endpoint-desc">שליפת רשימת כל הפוסטים במערכת</p>
+      </div>
+      <div class="endpoint">
+        <span class="endpoint-method method-get">GET</span>
+        <span class="endpoint-path">/posts/{id}</span>
+        <p class="endpoint-desc">שליפת פוסט בודד לפי מזהה</p>
+      </div>
+      <div class="endpoint">
+        <span class="endpoint-method method-post">POST</span>
+        <span class="endpoint-path">/posts</span>
+        <p class="endpoint-desc">יצירת פוסט חדש עם payload</p>
+      </div>
+      <div class="endpoint">
+        <span class="endpoint-method method-put">PUT</span>
+        <span class="endpoint-path">/posts/{id}</span>
+        <p class="endpoint-desc">עדכון מלא של פוסט קיים</p>
+      </div>
+      <div class="endpoint">
+        <span class="endpoint-method method-patch">PATCH</span>
+        <span class="endpoint-path">/posts/{id}</span>
+        <p class="endpoint-desc">עדכון חלקי של שדה בפוסט</p>
+      </div>
+      <div class="endpoint">
+        <span class="endpoint-method method-delete">DELETE</span>
+        <span class="endpoint-path">/posts/{id}</span>
+        <p class="endpoint-desc">מחיקת פוסט מהמערכת</p>
+      </div>
+      <div class="endpoint">
+        <span class="endpoint-method method-get">GET</span>
+        <span class="endpoint-path">/users/{id}/posts</span>
+        <p class="endpoint-desc">שליפת פוסטים לפי משתמש (chained)</p>
+      </div>
+      <div class="endpoint">
+        <span class="endpoint-method method-get">GET</span>
+        <span class="endpoint-path">/posts/{id}/comments</span>
+        <p class="endpoke-desc">שליפת תגובות לפוסט מסוים</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- LATEST RUN RESULTS -->
+  <section>
+    <div class="section-header">
+      <span class="section-num">02 //</span>
+      <h2 class="section-title">Latest Test Run</h2>
+      <span class="section-meta">newman run · 2 min ago</span>
+    </div>
+
+    <div class="results-shell">
+      <div class="results-toolbar">
+        <div class="results-toolbar-dots">
+          <span class="toolbar-dot"></span>
+          <span class="toolbar-dot"></span>
+          <span class="toolbar-dot"></span>
+        </div>
+        <span class="toolbar-title">~/qa-portfolio · newman run jsonplaceholder.postman_collection.json</span>
+      </div>
+
+      <div class="results-summary">
+        <div class="stat">
+          <div class="stat-label">Total</div>
+          <div class="stat-value">24</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Passed</div>
+          <div class="stat-value ok">22</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Failed</div>
+          <div class="stat-value err">2</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Avg Time</div>
+          <div class="stat-value">187ms</div>
+        </div>
+      </div>
+
+      <table class="test-table">
+        <thead>
+          <tr>
+            <th>בדיקה</th>
+            <th>Endpoint</th>
+            <th>Status</th>
+            <th>Time</th>
+            <th>Result</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="test-name">שליפת כל הפוסטים מחזירה מערך</td>
+            <td class="endpoint-cell">GET /posts</td>
+            <td class="status-cell pill-200">200 OK</td>
+            <td class="time-cell">142ms</td>
+            <td class="result-cell"><span class="status-pill pill-pass">PASS</span></td>
+          </tr>
+          <tr>
+            <td class="test-name">פוסט בודד תואם לסכמה</td>
+            <td class="endpoint-cell">GET /posts/1</td>
+            <td class="status-cell pill-200">200 OK</td>
+            <td class="time-cell">98ms</td>
+            <td class="result-cell"><span class="status-pill pill-pass">PASS</span></td>
+          </tr>
+          <tr>
+            <td class="test-name">יצירת פוסט מחזירה 201</td>
+            <td class="endpoint-cell">POST /posts</td>
+            <td class="status-cell pill-201">201 Created</td>
+            <td class="time-cell">312ms</td>
+            <td class="result-cell"><span class="status-pill pill-pass">PASS</span></td>
+          </tr>
+          <tr>
+            <td class="test-name">עדכון מלא משמר את ה-id</td>
+            <td class="endpoint-cell">PUT /posts/1</td>
+            <td class="status-cell pill-200">200 OK</td>
+            <td class="time-cell">204ms</td>
+            <td class="result-cell"><span class="status-pill pill-pass">PASS</span></td>
+          </tr>
+          <tr>
+            <td class="test-name">עדכון חלקי - title בלבד</td>
+            <td class="endpoint-cell">PATCH /posts/1</td>
+            <td class="status-cell pill-200">200 OK</td>
+            <td class="time-cell">156ms</td>
+            <td class="result-cell"><span class="status-pill pill-pass">PASS</span></td>
+          </tr>
+          <tr>
+            <td class="test-name">מחיקת פוסט מחזירה תגובה ריקה</td>
+            <td class="endpoint-cell">DELETE /posts/1</td>
+            <td class="status-cell pill-200">200 OK</td>
+            <td class="time-cell">128ms</td>
+            <td class="result-cell"><span class="status-pill pill-pass">PASS</span></td>
+          </tr>
+          <tr>
+            <td class="test-name">פוסט לא קיים מחזיר 404</td>
+            <td class="endpoint-cell">GET /posts/9999</td>
+            <td class="status-cell pill-404">404 NotFound</td>
+            <td class="time-cell">87ms</td>
+            <td class="result-cell"><span class="status-pill pill-pass">PASS</span></td>
+          </tr>
+          <tr>
+            <td class="test-name">תגובות שייכות לפוסט הנכון</td>
+            <td class="endpoint-cell">GET /posts/1/comments</td>
+            <td class="status-cell pill-200">200 OK</td>
+            <td class="time-cell">176ms</td>
+            <td class="result-cell"><span class="status-pill pill-pass">PASS</span></td>
+          </tr>
+          <tr>
+            <td class="test-name">חוסר ב-rate limiting (ידוע)</td>
+            <td class="endpoint-cell">GET /posts</td>
+            <td class="status-cell pill-200">200 OK</td>
+            <td class="time-cell">203ms</td>
+            <td class="result-cell"><span class="status-pill pill-fail">FAIL</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- WHAT WAS TESTED -->
+  <section>
+    <div class="section-header">
+      <span class="section-num">03 //</span>
+      <h2 class="section-title">Testing Techniques</h2>
+      <span class="section-meta">approach + coverage</span>
+    </div>
+
+    <div class="cards-grid">
+      <div class="feature-card">
+        <span class="feature-icon">[ pm.test() ]</span>
+        <h3>Status Code Assertions</h3>
+        <p>בדיקה שכל endpoint מחזיר את ה-status code הצפוי - 200, 201, 204, 404 בהתאם לתרחיש.</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">[ schema ]</span>
+        <h3>JSON Schema Validation</h3>
+        <p>שימוש ב-Ajv לאימות שמבנה התגובה תואם לסכמה המוגדרת מראש - שדות חובה, סוגי נתונים, פורמטים.</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">[ env ]</span>
+        <h3>Environment Variables</h3>
+        <p>ניהול סביבות מרובות (dev, staging, prod) עם משתנים דינמיים שמועברים בין בקשות.</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">[ chain ]</span>
+        <h3>Chained Requests</h3>
+        <p>שמירת ערכים מתגובה אחת והעברתם לבקשה הבאה - לדוגמה, שליפת postId ושימוש בו לבקשת תגובות.</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">[ data ]</span>
+        <h3>Data-Driven Testing</h3>
+        <p>הרצת אותה בקשה עם מספר סטים של נתונים מקובץ CSV/JSON לכיסוי מקרי קצה.</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">[ ci ]</span>
+        <h3>CI/CD Integration</h3>
+        <p>הרצה אוטומטית של ה-collection דרך Newman ב-GitHub Actions עם דוח HTML לכל commit.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- DOWNLOADS -->
+  <section>
+    <div class="section-header">
+      <span class="section-num">04 //</span>
+      <h2 class="section-title">Artifacts & Downloads</h2>
+      <span class="section-meta">collection + reports</span>
+    </div>
+
+    <div class="download-row">
+      <a href="#" class="download-card">
+        <div class="dl-meta">POSTMAN COLLECTION</div>
+        <div class="dl-title">JSONPlaceholder.collection.json</div>
+        <div class="dl-desc">קולקציית Postman מלאה עם כל הבקשות, האסרשנים והמשתנים. ייבוא בלחיצה ל-Postman.</div>
+        <div class="dl-file">→ jsonplaceholder.postman_collection.json</div>
+        <div class="dl-arrow">↗</div>
+      </a>
+      <a href="#" class="download-card">
+        <div class="dl-meta">NEWMAN HTML REPORT</div>
+        <div class="dl-title">newman-report.html</div>
+        <div class="dl-desc">דוח הרצה אינטראקטיבי שנוצר אוטומטית עם htmlextra reporter, כולל זמני תגובה ופירוט הכשלות.</div>
+        <div class="dl-file">→ newman/report.html</div>
+        <div class="dl-arrow">↗</div>
+      </a>
+    </div>
+  </section>
+
+  <!-- HOW TO RUN -->
+  <section>
+    <div class="section-header">
+      <span class="section-num">05 //</span>
+      <h2 class="section-title">Run It Yourself</h2>
+      <span class="section-meta">3 commands</span>
+    </div>
+
+    <div class="terminal">
+      <div class="terminal-header">
+        <span class="results-toolbar-dots">
+          <span class="toolbar-dot"></span>
+          <span class="toolbar-dot"></span>
+          <span class="toolbar-dot"></span>
+        </span>
+        <span>bash · qa-portfolio</span>
+      </div>
+      <div class="terminal-body">
+<span class="term-comment"># Install Newman with HTML reporter</span><br>
+<span class="term-prompt">$</span> npm install -g newman newman-reporter-htmlextra<br><br>
+<span class="term-comment"># Clone the repo</span><br>
+<span class="term-prompt">$</span> git clone github.com/your-name/qa-portfolio<br>
+<span class="term-prompt">$</span> cd qa-portfolio<br><br>
+<span class="term-comment"># Run the tests with HTML report</span><br>
+<span class="term-prompt">$</span> newman run jsonplaceholder.postman_collection.json \<br>
+&nbsp;&nbsp;-e environments/prod.json \<br>
+&nbsp;&nbsp;-r htmlextra,cli \<br>
+&nbsp;&nbsp;--reporter-htmlextra-export ./reports/index.html<br><br>
+<span class="term-out">┌─────────────────────────┬──────────┬──────────┐</span><br>
+<span class="term-out">│                         │ executed │   failed │</span><br>
+<span class="term-out">├─────────────────────────┼──────────┼──────────┤</span><br>
+<span class="term-out">│              iterations │        1 │        0 │</span><br>
+<span class="term-out">│                requests │        8 │        0 │</span><br>
+<span class="term-out">│            test-scripts │       16 │        0 │</span><br>
+<span class="term-out">│      prerequest-scripts │        8 │        0 │</span><br>
+<span class="term-out">│              assertions │       24 │        2 │</span><br>
+<span class="term-out">└─────────────────────────┴──────────┴──────────┘</span><br>
+<span class="term-ok">✓ Report generated → ./reports/index.html</span>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <div class="container footer-inner">
+    <div>// Built with Postman, Newman & coffee ☕</div>
+    <div>// © 2026 · QA Portfolio · v1.0.0</div>
+  </div>
+</footer>
+
+</body>
+</html>
