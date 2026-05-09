@@ -1,0 +1,451 @@
+{
+  "info": {
+    "name": "DummyJSON E-Commerce API Tests",
+    "description": "QA Portfolio - Comprehensive testing suite for DummyJSON API simulating an e-commerce platform. Covers full CRUD on products, search, category filtering, pagination, and authentication flow. Tests realistic scenarios with actual product data, prices, ratings, and inventory.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://dummyjson.com",
+      "type": "string"
+    },
+    {
+      "key": "testUsername",
+      "value": "emilys",
+      "type": "string"
+    },
+    {
+      "key": "testPassword",
+      "value": "emilyspass",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "01 - GET products with pagination",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/products?limit=10&skip=0",
+          "host": ["{{baseUrl}}"],
+          "path": ["products"],
+          "query": [
+            {"key": "limit", "value": "10"},
+            {"key": "skip", "value": "0"}
+          ]
+        },
+        "description": "Fetch first 10 products. Validates pagination parameters and basic product list structure."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code is 200', () => {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Response time is under 2000ms', () => {",
+              "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+              "});",
+              "",
+              "pm.test('Returns exactly 10 products', () => {",
+              "    const body = pm.response.json();",
+              "    pm.expect(body.products).to.be.an('array').with.lengthOf(10);",
+              "});",
+              "",
+              "pm.test('Pagination metadata is correct', () => {",
+              "    const body = pm.response.json();",
+              "    pm.expect(body.total).to.be.a('number').and.above(0);",
+              "    pm.expect(body.skip).to.eql(0);",
+              "    pm.expect(body.limit).to.eql(10);",
+              "});",
+              "",
+              "pm.test('Each product has core fields', () => {",
+              "    const products = pm.response.json().products;",
+              "    products.forEach(product => {",
+              "        pm.expect(product).to.have.all.keys(",
+              "            'id', 'title', 'description', 'category', 'price', 'discountPercentage',",
+              "            'rating', 'stock', 'tags', 'brand', 'sku', 'weight', 'dimensions', 'warrantyInformation',",
+              "            'shippingInformation', 'availabilityStatus', 'reviews', 'returnPolicy', 'minimumOrderQuantity',",
+              "            'meta', 'images', 'thumbnail'",
+              "        );",
+              "    });",
+              "});",
+              "",
+              "// Save first product ID for chained requests",
+              "const firstProduct = pm.response.json().products[0];",
+              "pm.collectionVariables.set('savedProductId', firstProduct.id);",
+              "pm.collectionVariables.set('savedProductTitle', firstProduct.title);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 - GET single product by ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/products/{{savedProductId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["products", "{{savedProductId}}"]
+        },
+        "description": "Fetch single product by ID using variable from previous request. Comprehensive schema validation."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code is 200', () => {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Returned product matches saved ID', () => {",
+              "    const product = pm.response.json();",
+              "    const expectedId = parseInt(pm.collectionVariables.get('savedProductId'));",
+              "    pm.expect(product.id).to.eql(expectedId);",
+              "});",
+              "",
+              "pm.test('Schema validation - product structure', () => {",
+              "    const schema = {",
+              "        type: 'object',",
+              "        required: ['id', 'title', 'price', 'rating', 'stock', 'category'],",
+              "        properties: {",
+              "            id: { type: 'number' },",
+              "            title: { type: 'string', minLength: 1 },",
+              "            price: { type: 'number', minimum: 0 },",
+              "            rating: { type: 'number', minimum: 0, maximum: 5 },",
+              "            stock: { type: 'number', minimum: 0 },",
+              "            category: { type: 'string' }",
+              "        }",
+              "    };",
+              "    pm.response.to.have.jsonSchema(schema);",
+              "});",
+              "",
+              "pm.test('Price is positive and reasonable', () => {",
+              "    const product = pm.response.json();",
+              "    pm.expect(product.price).to.be.above(0);",
+              "    pm.expect(product.price).to.be.below(100000);",
+              "});",
+              "",
+              "pm.test('Rating is between 0 and 5', () => {",
+              "    const product = pm.response.json();",
+              "    pm.expect(product.rating).to.be.within(0, 5);",
+              "});",
+              "",
+              "pm.test('Has at least one image', () => {",
+              "    const product = pm.response.json();",
+              "    pm.expect(product.images).to.be.an('array').with.length.above(0);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 - Search products",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/products/search?q=phone",
+          "host": ["{{baseUrl}}"],
+          "path": ["products", "search"],
+          "query": [
+            {"key": "q", "value": "phone"}
+          ]
+        },
+        "description": "Test search functionality - find products matching 'phone'. Validates search relevance."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code is 200', () => {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Search returns at least one result', () => {",
+              "    const body = pm.response.json();",
+              "    pm.expect(body.products).to.be.an('array').with.length.above(0);",
+              "});",
+              "",
+              "pm.test('Search results contain query term', () => {",
+              "    const products = pm.response.json().products;",
+              "    const query = 'phone';",
+              "    products.forEach(product => {",
+              "        const titleMatch = product.title.toLowerCase().includes(query);",
+              "        const descMatch = product.description.toLowerCase().includes(query);",
+              "        const categoryMatch = product.category.toLowerCase().includes(query);",
+              "        const tagsMatch = product.tags && product.tags.some(t => t.toLowerCase().includes(query));",
+              "        pm.expect(titleMatch || descMatch || categoryMatch || tagsMatch,",
+              "            `Product '${product.title}' should match 'phone' in title/desc/category/tags`).to.be.true;",
+              "    });",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 - Filter by category",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/products/category/smartphones",
+          "host": ["{{baseUrl}}"],
+          "path": ["products", "category", "smartphones"]
+        },
+        "description": "Filter products by category. Validates that all returned items belong to the requested category."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code is 200', () => {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Returns products in smartphones category', () => {",
+              "    const body = pm.response.json();",
+              "    pm.expect(body.products).to.be.an('array').with.length.above(0);",
+              "});",
+              "",
+              "pm.test('All products belong to smartphones category', () => {",
+              "    const products = pm.response.json().products;",
+              "    products.forEach(product => {",
+              "        pm.expect(product.category).to.eql('smartphones');",
+              "    });",
+              "});",
+              "",
+              "pm.test('All smartphones have stock information', () => {",
+              "    const products = pm.response.json().products;",
+              "    products.forEach(product => {",
+              "        pm.expect(product.stock).to.be.a('number');",
+              "        pm.expect(product.availabilityStatus).to.be.a('string');",
+              "    });",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 - POST create new product",
+      "request": {
+        "method": "POST",
+        "header": [
+          {"key": "Content-Type", "value": "application/json"}
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"title\": \"QA Test Product\",\n    \"description\": \"A premium product created via automated Postman tests for QA portfolio demonstration.\",\n    \"price\": 299.99,\n    \"discountPercentage\": 10.5,\n    \"rating\": 4.5,\n    \"stock\": 100,\n    \"brand\": \"QA-Brand\",\n    \"category\": \"electronics\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/products/add",
+          "host": ["{{baseUrl}}"],
+          "path": ["products", "add"]
+        },
+        "description": "Create a new product. DummyJSON returns 201 with the created object including a generated ID."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code is 201 Created', () => {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "",
+              "pm.test('New product has assigned ID', () => {",
+              "    const product = pm.response.json();",
+              "    pm.expect(product.id).to.be.a('number').and.above(0);",
+              "});",
+              "",
+              "pm.test('Title matches request payload', () => {",
+              "    const product = pm.response.json();",
+              "    pm.expect(product.title).to.eql('QA Test Product');",
+              "});",
+              "",
+              "pm.test('Price matches request payload', () => {",
+              "    const product = pm.response.json();",
+              "    pm.expect(product.price).to.eql(299.99);",
+              "});",
+              "",
+              "pm.test('Brand and category preserved', () => {",
+              "    const product = pm.response.json();",
+              "    pm.expect(product.brand).to.eql('QA-Brand');",
+              "    pm.expect(product.category).to.eql('electronics');",
+              "});",
+              "",
+              "// Save created product ID for next requests",
+              "pm.collectionVariables.set('createdProductId', pm.response.json().id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "06 - PUT update product",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {"key": "Content-Type", "value": "application/json"}
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"title\": \"Updated Product Title\",\n    \"price\": 399.99,\n    \"stock\": 50\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/products/1",
+          "host": ["{{baseUrl}}"],
+          "path": ["products", "1"]
+        },
+        "description": "Update an existing product. Tests partial update with fields title, price, and stock."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code is 200', () => {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Title was updated', () => {",
+              "    pm.expect(pm.response.json().title).to.eql('Updated Product Title');",
+              "});",
+              "",
+              "pm.test('Price was updated to new value', () => {",
+              "    pm.expect(pm.response.json().price).to.eql(399.99);",
+              "});",
+              "",
+              "pm.test('Stock was updated', () => {",
+              "    pm.expect(pm.response.json().stock).to.eql(50);",
+              "});",
+              "",
+              "pm.test('Product ID remains unchanged', () => {",
+              "    pm.expect(pm.response.json().id).to.eql(1);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "07 - DELETE product",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/products/1",
+          "host": ["{{baseUrl}}"],
+          "path": ["products", "1"]
+        },
+        "description": "Delete a product. DummyJSON returns the deleted object with isDeleted flag and timestamp."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code is 200', () => {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Response contains isDeleted flag set to true', () => {",
+              "    const product = pm.response.json();",
+              "    pm.expect(product.isDeleted).to.be.true;",
+              "});",
+              "",
+              "pm.test('Response includes deletedOn timestamp', () => {",
+              "    const product = pm.response.json();",
+              "    pm.expect(product.deletedOn).to.be.a('string');",
+              "    // Verify it's a valid ISO date",
+              "    const date = new Date(product.deletedOn);",
+              "    pm.expect(date.toString()).to.not.eql('Invalid Date');",
+              "});",
+              "",
+              "pm.test('Deleted product retains original ID', () => {",
+              "    pm.expect(pm.response.json().id).to.eql(1);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "08 - POST authentication (login)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {"key": "Content-Type", "value": "application/json"}
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"username\": \"{{testUsername}}\",\n    \"password\": \"{{testPassword}}\",\n    \"expiresInMins\": 30\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth/login",
+          "host": ["{{baseUrl}}"],
+          "path": ["auth", "login"]
+        },
+        "description": "Test authentication flow. Validates JWT token issuance and user data integrity."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code is 200', () => {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Response includes accessToken', () => {",
+              "    const body = pm.response.json();",
+              "    pm.expect(body.accessToken).to.be.a('string').and.not.empty;",
+              "});",
+              "",
+              "pm.test('Token follows JWT structure (3 parts)', () => {",
+              "    const token = pm.response.json().accessToken;",
+              "    const parts = token.split('.');",
+              "    pm.expect(parts).to.have.lengthOf(3);",
+              "});",
+              "",
+              "pm.test('Username matches login attempt', () => {",
+              "    const body = pm.response.json();",
+              "    const expectedUsername = pm.collectionVariables.get('testUsername');",
+              "    pm.expect(body.username).to.eql(expectedUsername);",
+              "});",
+              "",
+              "pm.test('User has email and gender info', () => {",
+              "    const body = pm.response.json();",
+              "    pm.expect(body.email).to.be.a('string').and.match(/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/);",
+              "    pm.expect(body.gender).to.match(/^(male|female)$/);",
+              "});",
+              "",
+              "// Save token for any future authenticated requests",
+              "pm.collectionVariables.set('authToken', pm.response.json().accessToken);"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
