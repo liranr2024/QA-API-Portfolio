@@ -62,29 +62,29 @@ A comprehensive API testing portfolio built with Postman and Newman, demonstrati
 
 ## 🎯 Skills Demonstrated
 
-- ✅ **Full CRUD coverage** — GET, POST, PUT, PATCH, DELETE across both APIs
-- ✅ **JWT authentication testing** — Token structure validation, login flow
-- ✅ **JSON Schema validation** — Deep nested object structures with `pm.response.to.have.jsonSchema()`
-- ✅ **Chained requests** — Variables captured from one request and reused in subsequent ones
-- ✅ **Search & filtering logic** — Multi-field search validation, category filtering
-- ✅ **Pagination testing** — `limit`/`skip` parameters, metadata validation
-- ✅ **Negative testing** — Deliberate 404 cases, error handling verification
-- ✅ **Cross-field business rules** — Price ranges, rating bounds, age consistency
-- ✅ **Soft delete patterns** — `isDeleted` flag and `deletedOn` timestamps
-- ✅ **Response time validation** — Performance budgets enforced (`< 1000ms`)
-- ✅ **Email & URL regex validation** — Pattern matching for data integrity
+- ✅ **Full CRUD coverage** - GET, POST, PUT, PATCH, DELETE across both APIs
+- ✅ **JWT authentication testing** - Token structure validation, login flow
+- ✅ **JSON Schema validation** - Deep nested object structures with `pm.response.to.have.jsonSchema()`
+- ✅ **Chained requests** - Variables captured from one request and reused in subsequent ones
+- ✅ **Search & filtering logic** - Multi-field search validation, category filtering
+- ✅ **Pagination testing** - `limit`/`skip` parameters, metadata validation
+- ✅ **Negative testing** - Deliberate 404 cases, error handling verification
+- ✅ **Cross-field business rules** - Price ranges, rating bounds, age consistency
+- ✅ **Soft delete patterns** - `isDeleted` flag and `deletedOn` timestamps
+- ✅ **Response time validation** - Performance budgets enforced (`< 1000ms`)
+- ✅ **Email & URL regex validation** - Pattern matching for data integrity
 
 ---
 
 ## 🚀 How to Run
 
-### Option A — Postman GUI
+### Option A - Postman GUI
 
 1. Open Postman
 2. Click **Import** → select either collection (`.json`) file
 3. Hit **Run collection** in Collection Runner
 
-### Option B — Newman CLI
+### Option B - Newman CLI
 
 ```bash
 # Install Newman with HTML reporter
@@ -177,9 +177,9 @@ DummyJSON E-Commerce API Tests
 
 Built as part of my QA portfolio to demonstrate practical API testing skills across diverse scenarios. Rather than focusing on a single API, this project intentionally tests **two different APIs** to showcase:
 
-- **Adaptability** — Same QA mindset applied to different domain models (blog posts vs. e-commerce)
-- **Breadth** — From basic CRUD to advanced authentication flows
-- **Depth** — Schema validation that goes beyond status codes to enforce business rules
+- **Adaptability** - Same QA mindset applied to different domain models (blog posts vs. e-commerce)
+- **Breadth** - From basic CRUD to advanced authentication flows
+- **Depth** - Schema validation that goes beyond status codes to enforce business rules
 
 Each test is designed to mirror real production testing workflows: schema contracts, chained data dependencies, negative scenarios, and CI/CD-ready execution.
 
