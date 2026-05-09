@@ -6,7 +6,7 @@
 <title>QA Portfolio · API Testing Lab</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700;800&family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg: #0a0e0f;
@@ -24,6 +24,7 @@
     --info: #4dc4ff;
     --purple: #b07cff;
     --mono: 'JetBrains Mono', ui-monospace, Menlo, monospace;
+    --mono-heb: 'IBM Plex Mono', 'JetBrains Mono', monospace;
     --sans: 'Heebo', system-ui, sans-serif;
   }
 
@@ -254,7 +255,7 @@
   }
   .endpoint-desc {
     margin-top: 8px;
-    font-family: var(--sans);
+    font-family: var(--mono-heb);
     font-size: 12px;
     color: var(--text-muted);
     line-height: 1.5;
@@ -341,7 +342,12 @@
   }
   .test-table tr:last-child td { border-bottom: none; }
   .test-table tr:hover { background: rgba(255,255,255,0.02); }
-  .test-name { color: var(--text); }
+  .test-name {
+    color: var(--text);
+    font-family: var(--mono-heb);
+    font-size: 13px;
+    direction: rtl;
+  }
   .test-table .endpoint-cell {
     direction: ltr;
     text-align: left;
@@ -822,11 +828,10 @@
 <span class="term-comment"># Install Newman with HTML reporter</span><br>
 <span class="term-prompt">$</span> npm install -g newman newman-reporter-htmlextra<br><br>
 <span class="term-comment"># Clone the repo</span><br>
-<span class="term-prompt">$</span> git clone github.com/your-name/qa-portfolio<br>
-<span class="term-prompt">$</span> cd qa-portfolio<br><br>
+<span class="term-prompt">$</span> git clone https://github.com/liranr2024/QA-API-Portfolio.git<br>
+<span class="term-prompt">$</span> cd QA-API-Portfolio<br><br>
 <span class="term-comment"># Run the tests with HTML report</span><br>
 <span class="term-prompt">$</span> newman run jsonplaceholder.postman_collection.json \<br>
-&nbsp;&nbsp;-e environments/prod.json \<br>
 &nbsp;&nbsp;-r htmlextra,cli \<br>
 &nbsp;&nbsp;--reporter-htmlextra-export ./reports/index.html<br><br>
 <span class="term-out">┌─────────────────────────┬──────────┬──────────┐</span><br>
@@ -835,7 +840,7 @@
 <span class="term-out">│              iterations │        1 │        0 │</span><br>
 <span class="term-out">│                requests │        8 │        0 │</span><br>
 <span class="term-out">│            test-scripts │       16 │        0 │</span><br>
-<span class="term-out">│      prerequest-scripts │        8 │        0 │</span><br>
+<span class="term-out">│      prerequest-scripts │        0 │        0 │</span><br>
 <span class="term-out">│              assertions │       28 │        0 │</span><br>
 <span class="term-out">└─────────────────────────┴──────────┴──────────┘</span><br>
 <span class="term-ok">✓ Report generated → ./reports/index.html</span>
