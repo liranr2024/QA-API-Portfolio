@@ -69,7 +69,7 @@
   .container {
     position: relative;
     z-index: 1;
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
     padding: 0 24px;
   }
@@ -153,9 +153,10 @@
   .hero-sub {
     font-size: 18px;
     color: var(--text-dim);
-    max-width: 640px;
+    max-width: 900px;
     margin-bottom: 40px;
     line-height: 1.7;
+    text-align: right;
   }
   .hero-meta {
     display: flex;
@@ -254,11 +255,13 @@
     word-break: break-all;
   }
   .endpoint-desc {
-    margin-top: 8px;
-    font-family: var(--mono-heb);
-    font-size: 12px;
-    color: var(--text-muted);
-    line-height: 1.5;
+    margin-top: 10px;
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--text-dim);
+    line-height: 1.6;
+    letter-spacing: 0.2px;
   }
 
   /* ====== TEST RESULTS TABLE ====== */
@@ -333,6 +336,10 @@
     letter-spacing: 1px;
     border-bottom: 1px solid var(--border);
   }
+  .test-table th:nth-child(1) {
+    font-family: var(--sans);
+    font-size: 12px;
+  }
   .test-table th:nth-child(2), .test-table th:nth-child(3), .test-table th:nth-child(4), .test-table th:nth-child(5) {
     text-align: left;
   }
@@ -344,9 +351,10 @@
   .test-table tr:hover { background: rgba(255,255,255,0.02); }
   .test-name {
     color: var(--text);
-    font-family: var(--mono-heb);
-    font-size: 13px;
-    direction: rtl;
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.5;
   }
   .test-table .endpoint-cell {
     direction: ltr;
@@ -409,7 +417,7 @@
   /* ====== DOWNLOAD SECTION ====== */
   .download-row {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, 1fr);
     gap: 16px;
   }
   .download-card {
@@ -537,6 +545,81 @@
     .test-table th:nth-child(3), .test-table td:nth-child(3) { display: none; }
     .topbar-left .hide-mobile { display: none; }
   }
+
+  /* ====== SKILLS BANNER ====== */
+  .skills-banner {
+    padding: 60px 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .skills-header {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 40px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .skills-header .section-num {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--accent);
+    font-weight: 500;
+  }
+  .skills-header .section-title {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+  }
+  .skills-header .section-meta {
+    margin-right: auto;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+  .skill-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 24px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+  .skill-card:hover {
+    border-color: var(--accent-dim);
+    background: linear-gradient(135deg, var(--bg-card), rgba(0,255,157,0.04));
+    transform: translateY(-2px);
+  }
+  .skill-icon {
+    display: inline-block;
+    width: 28px;
+    height: 28px;
+    line-height: 28px;
+    text-align: center;
+    background: rgba(0, 255, 157, 0.15);
+    color: var(--accent);
+    border-radius: 50%;
+    font-family: var(--mono);
+    font-weight: 700;
+    margin-bottom: 14px;
+  }
+  .skill-card h3 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--text);
+  }
+  .skill-card p {
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-dim);
+  }
 </style>
 </head>
 <body>
@@ -567,15 +650,57 @@
       בלי פשרות.
     </h1>
     <p class="hero-sub">
-      פרויקט פורטפוליו המדגים בדיקות אוטומטיות מקצה-לקצה על JSONPlaceholder API
-      באמצעות Postman ו-Newman. כולל אסרשנים על סטטוס, ולידציית סכמה,
-      ושרשור בקשות עם משתני סביבה.
+      פרויקט פורטפוליו המדגים סוויטה מקיפה של בדיקות API אוטומטיות על שני APIs
+      שונים: JSONPlaceholder (CRUD בסיסי) ו-DummyJSON (E-commerce מלא עם JWT auth).
+      65 אסרשנים על פני 16 endpoints, כולל ולידציית סכמה, שרשור בקשות, חיפוש,
+      סינון וטסטים שליליים. בנוי עם Postman ו-Newman, מוכן לאינטגרציה ב-CI/CD.
     </p>
     <div class="hero-meta">
-      <span>// API · <strong>JSONPlaceholder</strong></span>
+      <span>// APIs · <strong>JSONPlaceholder + DummyJSON</strong></span>
       <span>// Tools · <strong>Postman + Newman</strong></span>
-      <span>// Tests · <strong>28 assertions</strong></span>
-      <span>// Coverage · <strong>8 endpoints</strong></span>
+      <span>// Tests · <strong>65 assertions</strong></span>
+      <span>// Coverage · <strong>16 endpoints</strong></span>
+    </div>
+  </section>
+
+  <!-- WHAT THIS DEMONSTRATES -->
+  <section class="skills-banner">
+    <div class="skills-header">
+      <span class="section-num">//</span>
+      <h2 class="section-title">What This Demonstrates</h2>
+      <span class="section-meta">key skills · for hiring managers</span>
+    </div>
+    <div class="skills-grid">
+      <div class="skill-card">
+        <div class="skill-icon">✓</div>
+        <h3>API Testing Fundamentals</h3>
+        <p>Validating HTTP responses, status codes, headers, and payloads against expected behavior</p>
+      </div>
+      <div class="skill-card">
+        <div class="skill-icon">✓</div>
+        <h3>Schema & Contract Testing</h3>
+        <p>Ensuring API responses match defined data structures using JSON Schema validation</p>
+      </div>
+      <div class="skill-card">
+        <div class="skill-icon">✓</div>
+        <h3>CRUD Operations</h3>
+        <p>Full lifecycle coverage: Create, Read, Update, Delete - the foundation of every application</p>
+      </div>
+      <div class="skill-card">
+        <div class="skill-icon">✓</div>
+        <h3>Authentication Flows</h3>
+        <p>Testing JWT token generation, validation, and structure - critical for secure APIs</p>
+      </div>
+      <div class="skill-card">
+        <div class="skill-icon">✓</div>
+        <h3>Negative & Edge Cases</h3>
+        <p>Verifying graceful handling of errors, invalid inputs, and 404 scenarios</p>
+      </div>
+      <div class="skill-card">
+        <div class="skill-icon">✓</div>
+        <h3>Test Automation Ready</h3>
+        <p>Built with Postman + Newman for CI/CD integration - runs in any pipeline</p>
+      </div>
     </div>
   </section>
 
@@ -625,7 +750,7 @@
       <div class="endpoint">
         <span class="endpoint-method method-get">GET</span>
         <span class="endpoint-path">/posts/{id}/comments</span>
-        <p class="endpoke-desc">שליפת תגובות לפוסט מסוים</p>
+        <p class="endpoint-desc">שליפת תגובות לפוסט מסוים</p>
       </div>
     </div>
   </section>
@@ -635,7 +760,7 @@
     <div class="section-header">
       <span class="section-num">02 //</span>
       <h2 class="section-title">Latest Test Run</h2>
-      <span class="section-meta">newman run · 2 min ago</span>
+      <span class="section-meta">jsonplaceholder · 28 assertions</span>
     </div>
 
     <div class="results-shell">
@@ -739,10 +864,167 @@
     </div>
   </section>
 
-  <!-- WHAT WAS TESTED -->
+  <!-- DUMMYJSON ENDPOINTS -->
   <section>
     <div class="section-header">
       <span class="section-num">03 //</span>
+      <h2 class="section-title">Endpoints Under Test</h2>
+      <span class="section-meta">dummyjson.com</span>
+    </div>
+    <div class="endpoints">
+      <div class="endpoint">
+        <span class="endpoint-method method-get">GET</span>
+        <span class="endpoint-path">/products?limit=10</span>
+        <p class="endpoint-desc">שליפת מוצרים עם pagination</p>
+      </div>
+      <div class="endpoint">
+        <span class="endpoint-method method-get">GET</span>
+        <span class="endpoint-path">/products/{id}</span>
+        <p class="endpoint-desc">שליפת מוצר בודד עם schema validation</p>
+      </div>
+      <div class="endpoint">
+        <span class="endpoint-method method-get">GET</span>
+        <span class="endpoint-path">/products/search?q=phone</span>
+        <p class="endpoint-desc">חיפוש מוצרים לפי מילת מפתח</p>
+      </div>
+      <div class="endpoint">
+        <span class="endpoint-method method-get">GET</span>
+        <span class="endpoint-path">/products/category/smartphones</span>
+        <p class="endpoint-desc">סינון לפי קטגוריה</p>
+      </div>
+      <div class="endpoint">
+        <span class="endpoint-method method-post">POST</span>
+        <span class="endpoint-path">/products/add</span>
+        <p class="endpoint-desc">יצירת מוצר חדש</p>
+      </div>
+      <div class="endpoint">
+        <span class="endpoint-method method-put">PUT</span>
+        <span class="endpoint-path">/products/{id}</span>
+        <p class="endpoint-desc">עדכון מלא של מוצר</p>
+      </div>
+      <div class="endpoint">
+        <span class="endpoint-method method-delete">DELETE</span>
+        <span class="endpoint-path">/products/{id}</span>
+        <p class="endpoint-desc">מחיקת מוצר (soft delete)</p>
+      </div>
+      <div class="endpoint">
+        <span class="endpoint-method method-post">POST</span>
+        <span class="endpoint-path">/auth/login</span>
+        <p class="endpoint-desc">אימות JWT והנפקת token</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- DUMMYJSON TEST RUN -->
+  <section>
+    <div class="section-header">
+      <span class="section-num">04 //</span>
+      <h2 class="section-title">Latest Test Run</h2>
+      <span class="section-meta">dummyjson · 37 assertions</span>
+    </div>
+    <div class="results-shell">
+      <div class="results-toolbar">
+        <div class="results-toolbar-dots">
+          <span class="toolbar-dot"></span>
+          <span class="toolbar-dot"></span>
+          <span class="toolbar-dot"></span>
+        </div>
+        <span class="toolbar-title">~/qa-portfolio · newman run dummyjson.postman_collection.json</span>
+      </div>
+      <div class="results-summary">
+        <div class="stat">
+          <div class="stat-label">Total</div>
+          <div class="stat-value">37</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Passed</div>
+          <div class="stat-value ok">37</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Failed</div>
+          <div class="stat-value err">0</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Avg Time</div>
+          <div class="stat-value">191ms</div>
+        </div>
+      </div>
+      <table class="test-table">
+        <thead>
+          <tr>
+            <th>בדיקה</th>
+            <th>Endpoint</th>
+            <th>Status</th>
+            <th>Time</th>
+            <th>Result</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="test-name">שליפת מוצרים עם pagination תקינה</td>
+            <td class="endpoint-cell">GET /products</td>
+            <td class="status-cell pill-200">200 OK</td>
+            <td class="time-cell">156ms</td>
+            <td class="result-cell"><span class="status-pill pill-pass">PASS</span></td>
+          </tr>
+          <tr>
+            <td class="test-name">מוצר בודד תואם לסכמה</td>
+            <td class="endpoint-cell">GET /products/1</td>
+            <td class="status-cell pill-200">200 OK</td>
+            <td class="time-cell">98ms</td>
+            <td class="result-cell"><span class="status-pill pill-pass">PASS</span></td>
+          </tr>
+          <tr>
+            <td class="test-name">חיפוש מחזיר תוצאות רלוונטיות</td>
+            <td class="endpoint-cell">GET /products/search</td>
+            <td class="status-cell pill-200">200 OK</td>
+            <td class="time-cell">142ms</td>
+            <td class="result-cell"><span class="status-pill pill-pass">PASS</span></td>
+          </tr>
+          <tr>
+            <td class="test-name">סינון קטגוריה - כל הפריטים תואמים</td>
+            <td class="endpoint-cell">GET /products/category</td>
+            <td class="status-cell pill-200">200 OK</td>
+            <td class="time-cell">128ms</td>
+            <td class="result-cell"><span class="status-pill pill-pass">PASS</span></td>
+          </tr>
+          <tr>
+            <td class="test-name">יצירת מוצר חדש מחזירה 201</td>
+            <td class="endpoint-cell">POST /products/add</td>
+            <td class="status-cell pill-201">201 Created</td>
+            <td class="time-cell">287ms</td>
+            <td class="result-cell"><span class="status-pill pill-pass">PASS</span></td>
+          </tr>
+          <tr>
+            <td class="test-name">עדכון מוצר משמר את ה-ID</td>
+            <td class="endpoint-cell">PUT /products/1</td>
+            <td class="status-cell pill-200">200 OK</td>
+            <td class="time-cell">198ms</td>
+            <td class="result-cell"><span class="status-pill pill-pass">PASS</span></td>
+          </tr>
+          <tr>
+            <td class="test-name">מחיקה מחזירה isDeleted: true</td>
+            <td class="endpoint-cell">DELETE /products/1</td>
+            <td class="status-cell pill-200">200 OK</td>
+            <td class="time-cell">176ms</td>
+            <td class="result-cell"><span class="status-pill pill-pass">PASS</span></td>
+          </tr>
+          <tr>
+            <td class="test-name">JWT login מחזיר accessToken תקני</td>
+            <td class="endpoint-cell">POST /auth/login</td>
+            <td class="status-cell pill-200">200 OK</td>
+            <td class="time-cell">342ms</td>
+            <td class="result-cell"><span class="status-pill pill-pass">PASS</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- WHAT WAS TESTED -->
+  <section>
+    <div class="section-header">
+      <span class="section-num">05 //</span>
       <h2 class="section-title">Testing Techniques</h2>
       <span class="section-meta">approach + coverage</span>
     </div>
@@ -784,13 +1066,13 @@
   <!-- DOWNLOADS -->
   <section>
     <div class="section-header">
-      <span class="section-num">04 //</span>
+      <span class="section-num">06 //</span>
       <h2 class="section-title">Artifacts & Downloads</h2>
       <span class="section-meta">collection + reports</span>
     </div>
 
     <div class="download-row">
-      <a href="#" class="download-card">
+      <a href="jsonplaceholder.postman_collection.json" download class="download-card">
         <div class="dl-meta">POSTMAN COLLECTION</div>
         <div class="dl-title">JSONPlaceholder.collection.json</div>
         <div class="dl-desc">קולקציית Postman מלאה עם כל הבקשות, האסרשנים והמשתנים. ייבוא בלחיצה ל-Postman.</div>
@@ -804,13 +1086,27 @@
         <div class="dl-file">→ newman/report.html</div>
         <div class="dl-arrow">↗</div>
       </a>
+      <a href="dummyjson.postman_collection.json" download class="download-card">
+        <div class="dl-meta">POSTMAN COLLECTION</div>
+        <div class="dl-title">DummyJSON.collection.json</div>
+        <div class="dl-desc">קולקציית Postman שנייה - בדיקות מקיפות על DummyJSON API: CRUD מלא על מוצרים, חיפוש, סינון לפי קטגוריה, ואימות JWT.</div>
+        <div class="dl-file">→ dummyjson.postman_collection.json</div>
+        <div class="dl-arrow">↗</div>
+      </a>
+      <a href="#" class="download-card">
+        <div class="dl-meta">NEWMAN HTML REPORT</div>
+        <div class="dl-title">dummyjson-report.html</div>
+        <div class="dl-desc">דוח הרצה אינטראקטיבי של ה-collection השני, כולל זמני תגובה ופירוט 37 ה-assertions של DummyJSON.</div>
+        <div class="dl-file">→ newman/dummyjson-report.html</div>
+        <div class="dl-arrow">↗</div>
+      </a>
     </div>
   </section>
 
   <!-- HOW TO RUN -->
   <section>
     <div class="section-header">
-      <span class="section-num">05 //</span>
+      <span class="section-num">07 //</span>
       <h2 class="section-title">Run It Yourself</h2>
       <span class="section-meta">3 commands</span>
     </div>
@@ -834,16 +1130,20 @@
 <span class="term-prompt">$</span> newman run jsonplaceholder.postman_collection.json \<br>
 &nbsp;&nbsp;-r htmlextra,cli \<br>
 &nbsp;&nbsp;--reporter-htmlextra-export ./reports/index.html<br><br>
+<span class="term-comment"># Run the second collection (DummyJSON)</span><br>
+<span class="term-prompt">$</span> newman run dummyjson.postman_collection.json \<br>
+&nbsp;&nbsp;-r htmlextra,cli \<br>
+&nbsp;&nbsp;--reporter-htmlextra-export ./reports/dummyjson-report.html<br><br>
 <span class="term-out">┌─────────────────────────┬──────────┬──────────┐</span><br>
 <span class="term-out">│                         │ executed │   failed │</span><br>
 <span class="term-out">├─────────────────────────┼──────────┼──────────┤</span><br>
-<span class="term-out">│              iterations │        1 │        0 │</span><br>
-<span class="term-out">│                requests │        8 │        0 │</span><br>
-<span class="term-out">│            test-scripts │       16 │        0 │</span><br>
+<span class="term-out">│              iterations │        2 │        0 │</span><br>
+<span class="term-out">│                requests │       16 │        0 │</span><br>
+<span class="term-out">│            test-scripts │       32 │        0 │</span><br>
 <span class="term-out">│      prerequest-scripts │        0 │        0 │</span><br>
-<span class="term-out">│              assertions │       28 │        0 │</span><br>
+<span class="term-out">│              assertions │       65 │        0 │</span><br>
 <span class="term-out">└─────────────────────────┴──────────┴──────────┘</span><br>
-<span class="term-ok">✓ Report generated → ./reports/index.html</span>
+<span class="term-ok">✓ Reports generated → ./reports/</span>
       </div>
     </div>
   </section>
